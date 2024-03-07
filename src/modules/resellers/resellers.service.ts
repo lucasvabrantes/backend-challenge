@@ -2,19 +2,16 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateResellerDto } from './dto/create-reseller.dto';
 import { UpdateResellerDto } from './dto/update-reseller.dto';
 import { PrismaService } from 'src/database/prisma.service';
+import { Reseller } from './entities/reseller.entity';
 
 @Injectable()
 export class ResellersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createResellerDto: CreateResellerDto) {
-    const findReseller = await this.prisma.reseller.findFirst({
-      where: { email: createResellerDto.email },
-    });
-
-    if (findReseller) {
-      throw new ConflictException('User already exists');
-    }
+    const reseller = new Reseller();
+    Object.assign(reseller, { ...createResellerDto });
+    return await this.prisma.reseller.create({ data: { ...reseller } });
   }
 
   async findAll() {
