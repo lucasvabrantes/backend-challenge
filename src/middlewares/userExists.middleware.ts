@@ -6,28 +6,15 @@ import { PrismaService } from 'src/database/prisma.service';
 export class UserExists implements NestMiddleware {
   constructor(private prisma: PrismaService) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    const findResellerByEmail = await this.prisma.reseller.findFirst({
+    const findUserByEmail = await this.prisma.user.findFirst({
       where: { email: req.body.email },
     });
 
-    const findResellerByCpf = await this.prisma.reseller.findFirst({
+    const findUserByCpf = await this.prisma.user.findFirst({
       where: { cpf: req.body.cpf },
     });
 
-    const findStoreOwnerByEmail = await this.prisma.storeOwner.findFirst({
-      where: { email: req.body.email },
-    });
-
-    const findStoreOwnerByCpf = await this.prisma.storeOwner.findFirst({
-      where: { cpf: req.body.cpf },
-    });
-
-    if (
-      findStoreOwnerByEmail ||
-      findStoreOwnerByCpf ||
-      findResellerByEmail ||
-      findResellerByCpf
-    ) {
+    if (findUserByEmail || findUserByCpf) {
       throw new ConflictException('User already exists');
     }
 

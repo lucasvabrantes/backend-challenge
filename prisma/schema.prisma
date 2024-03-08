@@ -13,32 +13,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Reseller {
-  id       Int    @id @default(autoincrement())
-  fullName String
-  cpf      String @unique
-  email    String @unique
-  balance  Float
-  password String
-
-  @@map("resellers")
+enum UserType {
+  RESELLER
+  SHOPKEEPER
 }
 
-model StoreOwner {
-  id       Int    @id @default(autoincrement())
+model User {
+  id       Int      @id @default(autoincrement())
   fullName String
-  cpf      String @unique
-  email    String @unique
+  cpf      String   @unique
+  email    String   @unique
   balance  Float
+  userType UserType
   password String
 
-  @@map("store_owners")
+  @@map("users")
 }
 
 model Transaction {
-  id       Int    @id @default(autoincrement())
-  sender   String
-  receiver String
+  id       Int   @id @default(autoincrement())
+  sender   Int
+  receiver Int
   amount   Float
 
   @@map("transactions")

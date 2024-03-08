@@ -7,17 +7,16 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ResellersService } from './resellers.service';
-import { CreateResellerDto } from './dto/create-reseller.dto';
-// import { UpdateResellerDto } from './dto/update-reseller.dto';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
 
-@Controller('resellers')
-export class ResellersController {
-  constructor(private readonly resellersService: ResellersService) {}
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('')
-  create(@Body() createResellerDto: CreateResellerDto) {
-    return this.resellersService.create(createResellerDto);
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
   }
 
   // @Get()

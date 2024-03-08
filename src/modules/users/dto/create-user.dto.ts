@@ -7,7 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateStoreOwnerDto {
+export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   fullName: string;
@@ -25,8 +25,12 @@ export class CreateStoreOwnerDto {
   @IsNumber({ maxDecimalPlaces: 2 })
   balance: number;
 
+  @IsNotEmpty()
+  @IsString()
+  userType: string;
+
   @IsString()
   @IsNotEmpty()
-  @MinLength(8)
+  @MinLength(8, { message: 'É necessário ter ao menos 8 caracteres' })
   password: string;
 }
