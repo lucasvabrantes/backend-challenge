@@ -1,3 +1,5 @@
+import { hashSync } from 'bcryptjs';
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -27,10 +29,13 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  userType: string;
+  userType: 'RESELLER' | 'SHOPKEEPER';
 
   @IsString()
   @IsNotEmpty()
   @MinLength(8, { message: 'É necessário ter ao menos 8 caracteres' })
+  @Transform(({ value }: { value: string }) => hashSync(value, 10), {
+    groups: ['transform'],
+  })
   password: string;
 }

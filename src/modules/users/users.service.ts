@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from 'src/database/prisma.service';
 import { User } from './entities/user.entity';
-// import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -11,24 +12,45 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const user = new User();
     Object.assign(user, { ...createUserDto });
-    const newUser = await this.prisma.user.create({ data: { ...user } });
+    await this.prisma.user.create({ data: { ...user } });
 
-    return newUser;
+    return plainToInstance(User, user);
   }
 
-  // async findAll() {
-  //   return `This action returns all resellers`;
-  // }
+  async findAll() {
+    const allUsers = await this.prisma.user.findMany({
+      orderBy: { id: 'asc' },
+    });
+    return plainToInstance(User, allUsers);
+  }
 
-  // async findOne(id: number) {
-  //   return `This action returns a #${id} reseller`;
-  // }
+  async findOne(id: number) {
+    const foundUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!foundUser) {
+      throw new NotFoundException('User not found');
+    }
 
-  // async update(id: number, updateResellerDto: UpdateUserDto) {
-  //   return `This action updates a #${id} reseller`;
-  // }
+    return plainToInstance(User, foundUser);
+  }
 
-  // async remove(id: number) {
-  //   return `This action removes a #${id} reseller`;
-  // }
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const foundUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!foundUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: { ...updateUserDto },
+    });
+    return plainToInstance(User, updatedUser);
+  }
+
+  async remove(id: number) {
+    const foundUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!foundUser) {
+      throw new NotFoundException('User not found');
+    }
+    return await this.prisma.user.delete({ where: { id } });
+  }
 }
